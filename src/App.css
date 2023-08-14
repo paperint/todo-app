@@ -6,3 +6,66 @@
   padding: 0;
   font-family: "Josefin Sans", sans-serif;
 }
+
+/* Style for checked checkboxes */
+input[type="checkbox"]:checked {
+  background: linear-gradient(
+    to right,
+    hsl(192, 100%, 67%),
+    hsl(280, 87%, 65%)
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative; /* Add this line */
+}
+
+/* Icon for checked checkboxes */
+input[type="checkbox"]:checked::before {
+  content: "";
+  background-image: url("./images/icon-check.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
+
+.bgmain-darkmode {
+  background: hsl(235, 21%, 11%);
+  background-image: url("/src/images/bg-desktop-dark.jpg");
+  background-repeat: no-repeat;
+  background-position: top;
+  background-size: 100% 250px;
+  padding: 30px;
+}
+
+.bgmain-lightmode {
+  background: hsl(0, 0%, 98%);
+  background-image: url("/src/images/bg-desktop-light.jpg");
+  background-repeat: no-repeat;
+  background-position: top;
+  background-size: 100% 250px;
+  padding: 30px;
+}
+
+@media only screen and (max-width: 768px) {
+  .bgmain-darkmode {
+    background: hsl(235, 21%, 11%);
+    background-image: url("/src/images/bg-mobile-dark.jpg");
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: 100% 250px;
+    padding: 30px;
+  }
+  .bgmain-lightmode {
+    background: hsl(0, 0%, 98%);
+    background-image: url("/src/images/bg-mobile-light.jpg");
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: 100% 250px;
+    padding: 30px;
+  }
+}

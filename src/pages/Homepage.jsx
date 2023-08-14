@@ -1,20 +1,30 @@
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import React, { useState, useEffect } from "react";
+import "../App.css";
+import BottomBtn from "../component/BottomBtn";
+import List from "../component/List";
+import Form from "../component/Form";
+import Header from "../component/Header";
 
 const info = [
-  { message: "text 1", checked: false, id: Math.random() },
-  { message: "text 2", checked: false, id: Math.random() },
-  { message: "text 3", checked: false, id: Math.random() },
+  {
+    message: "Press Enter to add todo list",
+    checked: false,
+    id: Math.random(),
+  },
+  {
+    message: "You can drag and drop to reader list",
+    checked: false,
+    id: Math.random(),
+  },
 ];
 
 function Homepage() {
   const [list, setList] = useState(info);
   const [showList, setShowList] = useState(null); // New state for filtered items
   const [text, setText] = useState("");
+  const [isDark, setIsDark] = useState(true);
+  const [isChecked, setChecked] = useState("all");
+  const newList = showList !== null ? showList : list;
 
   const handlerSubmit = (e) => {
     e.preventDefault();
@@ -39,30 +49,38 @@ function Homepage() {
     const newList = [...list];
     const deletedItem = newList.filter((item) => item.id !== id);
     setList(deletedItem);
+    setShowList(deletedItem);
   };
 
-  const handlerClearComplete = (e) => {
+  const handlerClearComplete = () => {
     const newList = [...list];
     const clearList = newList.filter((item) => !item.checked);
     setList(clearList);
     setShowList(null);
+    setChecked("all");
   };
 
-  const filterChecked = () => {
-    const checkedList = list.filter((item) => item.checked);
-    setShowList(checkedList);
+  const handlerSort = () => {
+    if (isChecked === "all") {
+      setShowList(null);
+    }
+    if (isChecked === "active") {
+      const uncheckedList = list.filter((item) => !item.checked);
+      setShowList(uncheckedList);
+    }
+    if (isChecked === "completed") {
+      const checkedList = list.filter((item) => item.checked);
+      setShowList(checkedList);
+    }
   };
 
-  const filterActive = () => {
-    const uncheckedList = list.filter((item) => !item.checked);
-    setShowList(uncheckedList);
-  };
+  useEffect(() => {
+    handlerSort();
+  }, [isChecked]);
 
-  const showAll = () => {
-    setShowList(null); // Reset the filtered items to show all
-  };
-
-  const newList = showList !== null ? showList : list;
+  useEffect(() => {
+    handlerSort();
+  }, [list]);
 
   const activeLeftAmount = () => {
     const activeLeft = list.filter((item) => !item.checked).length;
@@ -73,74 +91,44 @@ function Homepage() {
     activeLeftAmount();
   }, [list]);
 
-  const onDragEnd = (event) => {
-    console.log("onDragEnd", event);
-  };
-
   return (
-    <div className="w-full ">
-      <h1 className="text-3xl font-bold tracking-widest text-center">
-        T O D O
-      </h1>
-      <form className="text-center" onSubmit={handlerSubmit}>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="bg-teal-400 border-2 "
-        />
-      </form>
-      <div>
-        <ul className="flex flex-col items-center justify-center text-center">
-          <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <SortableContext
-              items={newList}
-              strategy={verticalListSortingStrategy}
-            >
-              {newList.map((item) => {
-                return (
-                  <li
-                    key={item.id}
-                    className="flex items-center justify-evenly w-72"
-                  >
-                    <input
-                      type="checkbox"
-                      name={item.message}
-                      id={item.id}
-                      checked={item.checked}
-                      onChange={() => handlerChecked(item.id)}
-                    />
-                    <label
-                      htmlFor={item.id}
-                      className={!item.checked ? "font-bold" : "line-through"}
-                    >
-                      {item.message}
-                    </label>
-                    <button onClick={() => handlerDeletedList(item.id)}>
-                      X
-                    </button>
-                  </li>
-                );
-              })}
-            </SortableContext>
-          </DndContext>
-        </ul>
-      </div>
+    <div
+      className={`w-full h-screen ${
+        isDark ? `bgmain-darkmode` : `bgmain-lightmode`
+      }`}
+    >
+      <div className="w-full max-w-xl mx-auto">
+        <Header isDark={isDark} setIsDark={setIsDark} />
 
-      <div className="mt-4 text-center">
-        <button onClick={filterChecked} className="bg-red-400">
-          Show Checked Items
-        </button>
-        <button onClick={filterActive} className="bg-violet-200">
-          Show Unchecked Items
-        </button>
-        <button onClick={showAll} className="bg-green-300 ">
-          Show All Items
-        </button>
-        <p className="text-xl ">active left: {activeLeftAmount()}</p>
-        <button onClick={() => handlerClearComplete()} className=" bg-cyan-400">
-          Clear
-        </button>
+        <Form
+          text={text}
+          setText={setText}
+          isDark={isDark}
+          handlerSubmit={handlerSubmit}
+        />
+        <List
+          list={list}
+          setList={setList}
+          newList={newList}
+          isDark={isDark}
+          handlerChecked={handlerChecked}
+          handlerDeletedList={handlerDeletedList}
+          activeLeftAmount={activeLeftAmount}
+          handlerClearComplete={handlerClearComplete}
+          isChecked={isChecked}
+          setChecked={setChecked}
+        />
+        <div className=" lg:hidden">
+          <BottomBtn
+            isDark={isDark}
+            isChecked={isChecked}
+            setChecked={setChecked}
+          />
+        </div>
+
+        <p className="mt-10 text-xs text-center text-darkTheme-DarkGrayishBlue">
+          Drag and drop to reorder list
+        </p>
       </div>
     </div>
   );
